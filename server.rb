@@ -7,9 +7,22 @@ require 'dotenv'
 require 'rack-ssl-enforcer'
 
 Dotenv.load
+database_url = ENV["DATABASE_URL"]
+uri = URI.parse(database_url)
 
 configure :development do
   set :db_config, { dbname: "bitbuds" }
+end
+
+configure :production do
+  uri = URI.parse(ENV["DATABASE_URL"])
+  set :db_config, {
+    host: uri.host,
+    port: uri.port,
+    dbname: uri.path.delete('/'),
+    user: uri.user,
+    password: uri.password
+  }
 end
 
 use Rack::SslEnforcer
