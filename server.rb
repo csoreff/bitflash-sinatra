@@ -2,7 +2,6 @@ require 'sinatra'
 require 'pg'
 require 'round'
 require 'bcrypt'
-require 'pry'
 require 'dotenv'
 require 'rack-ssl-enforcer'
 
