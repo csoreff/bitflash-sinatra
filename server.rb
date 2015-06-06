@@ -8,6 +8,10 @@ require 'rack-ssl-enforcer'
 
 Dotenv.load
 
+configure :development do
+  set :db_config, { dbname: "bitbuds" }
+end
+
 use Rack::SslEnforcer
 set :session_secret, ENV['SESSION_SECRET']
 
@@ -23,7 +27,7 @@ client.authenticate_identify(api_token: api_token)
 
 def db_connection
   begin
-    connection = PG.connect(dbname: "bitflash")
+    connection = PG.connect(dbname: "bitbuds")
     yield(connection)
   ensure
     connection.close
