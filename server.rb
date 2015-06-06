@@ -33,10 +33,13 @@ use Rack::Session::Cookie, :key => '_rack_session',
                            :path => '/',
                            :expire_after => 2592000, # In seconds
                            :secret => settings.session_secret 
+before do
+  @client = Round.client
+  @api_token = ENV['ROUND_API_TOKEN']
+  @client.authenticate_identify(api_token: api_token)
+end
 
-client = Round.client
-api_token = ENV['ROUND_API_TOKEN']
-client.authenticate_identify(api_token: api_token)
+
 
 def db_connection
   begin
@@ -48,8 +51,8 @@ def db_connection
 end
 
 def authenticate_user(api_token, device_token, email)
-  full_user = client.authenticate_device(
-            api_token: api_token,
+  full_user = @client.authenticate_device(
+            api_token: @api_token,
             device_token: device_token,
             email: email
           )
@@ -81,7 +84,7 @@ post '/register' do
   password = BCrypt::Password.create(params[:password])
   passphrase = params[:passphrase]
   device_name = params[:device_name]
-  device_token = client.users.create(
+  device_token = @client.users.create(
                   first_name: first_name,
                   last_name: last_name,
                   email: email,
