@@ -7,8 +7,6 @@ require 'dotenv'
 require 'rack-ssl-enforcer'
 
 Dotenv.load
-database_url = ENV["DATABASE_URL"]
-uri = URI.parse(database_url)
 
 configure :development do
   set :db_config, { dbname: "bitbuds" }
@@ -16,6 +14,14 @@ end
 
 configure :production do
   uri = URI.parse(ENV["DATABASE_URL"])
+  use Rack::SslEnforcer
+  set :session_secret, ENV['SESSION_SECRET']
+
+  #Enable sinatra sessions
+  use Rack::Session::Cookie, :key => '_rack_session',
+                             :path => '/',
+                             :expire_after => 2592000, # In seconds
+                             :secret => settings.session_secret 
   set :db_config, {
     host: uri.host,
     port: uri.port,
@@ -24,15 +30,6 @@ configure :production do
     password: uri.password
   }
 end
-
-use Rack::SslEnforcer
-set :session_secret, ENV['SESSION_SECRET']
-
-#Enable sinatra sessions
-use Rack::Session::Cookie, :key => '_rack_session',
-                           :path => '/',
-                           :expire_after => 2592000, # In seconds
-                           :secret => settings.session_secret 
 
 client = Round.client
 api_token = ENV['ROUND_API_TOKEN']
