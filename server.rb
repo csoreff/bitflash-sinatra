@@ -34,14 +34,14 @@ use Rack::Session::Cookie, :key => '_rack_session',
                            :expire_after => 2592000, # In seconds
                            :secret => settings.session_secret 
 
-@client = Round.client
-@api_token = ENV['ROUND_API_TOKEN']
-@client.authenticate_identify(api_token: api_token)
+client = Round.client
+api_token = ENV['ROUND_API_TOKEN']
+client.authenticate_identify(api_token: api_token)
 
 
 def db_connection
   begin
-    connection = PG.connect(dbname: "bitbuds")
+    connection = PG.connect(dbname: settings.db_config[:dbname])
     yield(connection)
   ensure
     connection.close
@@ -50,7 +50,7 @@ end
 
 def authenticate_user(api_token, device_token, email)
   full_user = @client.authenticate_device(
-            api_token: @api_token,
+            api_token: api_token,
             device_token: device_token,
             email: email
           )
@@ -82,7 +82,7 @@ post '/register' do
   password = BCrypt::Password.create(params[:password])
   passphrase = params[:passphrase]
   device_name = params[:device_name]
-  device_token = @client.users.create(
+  device_token = client.users.create(
                   first_name: first_name,
                   last_name: last_name,
                   email: email,
