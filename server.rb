@@ -6,6 +6,16 @@ require 'pry'
 require 'dotenv'
 
 Dotenv.load
+
+use Rack::SslEnforcer
+set :session_secret, ENV['SESSION_SECRET']
+
+#Enable sinatra sessions
+use Rack::Session::Cookie, :key => '_rack_session',
+                           :path => '/',
+                           :expire_after => 2592000, # In seconds
+                           :secret => settings.session_secret 
+
 client = Round.client
 api_token = ENV['ROUND_API_TOKEN']
 client.authenticate_identify(api_token: api_token)
@@ -61,6 +71,5 @@ post '/register' do
                   device_name: device_name,
                   redirect_uri: 'http://something.com/user-device-approved'
                 )
-  conn.exec_params("INSERT INTO users VALUES ('#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}')
-   WHERE email = $1", [params[:email]]).to_a[0]['password']
+  conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
 end
