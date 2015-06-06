@@ -30,7 +30,6 @@ configure :production do
   }
 end
 
-@client = Round.client
 @api_token = ENV['ROUND_API_TOKEN']
 
 def db_connection
@@ -70,20 +69,23 @@ get '/register' do
 end
 
 post '/register' do
+  @client = Round.client
   first_name = params[:first_name]
   last_name = params[:last_name]
   email = params[:email]
   password = BCrypt::Password.create(params[:password])
   passphrase = params[:passphrase]
   device_name = params[:device_name]
-  client.authenticate_identify(api_token: @api_token)
-  device_token = client.users.create(
+  @client.authenticate_identify(api_token: @api_token)
+  device_token = @client.users.create(
                   first_name: first_name,
                   last_name: last_name,
                   email: email,
                   passphrase: passphrase,
                   device_name: device_name
                 )
-  conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
+  db_connection do |conn|
+    conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
+  end
   redirect '/'
 end
