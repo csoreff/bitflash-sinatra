@@ -87,7 +87,7 @@ post '/register' do
                   email: email,
                   passphrase: passphrase,
                   device_name: device_name,
-                  redirect_uri: 'http://something.com/user-device-approved'
+                  redirect_uri: '/'
                 )
   conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
 end
