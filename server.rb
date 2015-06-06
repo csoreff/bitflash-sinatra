@@ -32,8 +32,6 @@ end
 
 client = Round.client
 api_token = ENV['ROUND_API_TOKEN']
-client.authenticate_identify(api_token: api_token)
-
 
 def db_connection
   begin
@@ -78,6 +76,7 @@ post '/register' do
   password = BCrypt::Password.create(params[:password])
   passphrase = params[:passphrase]
   device_name = params[:device_name]
+  client.authenticate_identify(api_token: api_token)
   device_token = client.users.create(
                   first_name: first_name,
                   last_name: last_name,
