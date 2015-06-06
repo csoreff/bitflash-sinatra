@@ -33,12 +33,10 @@ use Rack::Session::Cookie, :key => '_rack_session',
                            :path => '/',
                            :expire_after => 2592000, # In seconds
                            :secret => settings.session_secret 
-before do
-  @client = Round.client
-  @api_token = ENV['ROUND_API_TOKEN']
-  @client.authenticate_identify(api_token: api_token)
-end
 
+@client = Round.client
+@api_token = ENV['ROUND_API_TOKEN']
+@client.authenticate_identify(api_token: api_token)
 
 
 def db_connection
