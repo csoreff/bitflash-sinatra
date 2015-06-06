@@ -82,7 +82,8 @@ post '/register' do
                   last_name: last_name,
                   email: email,
                   passphrase: passphrase,
-                  device_name: device_name
+                  device_name: device_name,
+                  redirect_uri: 'http://bitbuds.herokuapp.com'
                 )
   db_connection do |conn|
     conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
