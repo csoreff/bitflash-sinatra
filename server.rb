@@ -6,6 +6,7 @@ require 'dotenv'
 require 'rack-ssl-enforcer'
 
 Dotenv.load
+@api_token = ENV['ROUND_API_TOKEN']
 
 configure :development do
   set :db_config, { dbname: "bitbuds" }
@@ -68,7 +69,6 @@ end
 
 post '/register' do
   @client = Round.client
-  @api_token = ENV['ROUND_API_TOKEN']
   first_name = params[:first_name]
   last_name = params[:last_name]
   email = params[:email]
@@ -87,5 +87,5 @@ post '/register' do
   db_connection do |conn|
     conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
   end
-  erb :login
+  erb :index
 end
