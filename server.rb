@@ -30,7 +30,7 @@ configure :production do
   }
 end
 
-@api_token = "#{ENV[ROUND_API_TOKEN]}"
+@api_token = "#{ENV['ROUND_API_TOKEN']}"
 
 def db_connection
   begin
