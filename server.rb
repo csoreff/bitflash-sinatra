@@ -6,7 +6,6 @@ require 'dotenv'
 require 'rack-ssl-enforcer'
 
 Dotenv.load
-@api_token = ENV['ROUND_API_TOKEN']
 
 configure :development do
   set :db_config, { dbname: "bitbuds" }
@@ -68,15 +67,15 @@ get '/register' do
 end
 
 post '/register' do
-  @client = Round.client
+  client = Round.client
   first_name = params[:first_name]
   last_name = params[:last_name]
   email = params[:email]
   password = BCrypt::Password.create(params[:password])
-  passphrase = params[:passphrase]
+  passphrase = BCrypt::Password.create(params[:passphrase])
   device_name = params[:device_name]
-  @client.authenticate_identify(api_token: @api_token)
-  device_token = @client.users.create(
+  client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
+  device_token = client.users.create(
                   first_name: first_name,
                   last_name: last_name,
                   email: email,
@@ -85,7 +84,7 @@ post '/register' do
                   redirect_uri: 'http://bitbuds.herokuapp.com'
                 )
   db_connection do |conn|
-    conn.exec_params("INSERT INTO users VALUES ($1, $2, $3, $4, $5)", ['#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{device_token}'])
+    conn.exec_params("INSERT INTO users (first_name, last_name, email, password, device_token) VALUES ($1, $2, $3, $4, $5)", [first_name, last_name, email, password, device_token])
   end
   erb :index
 end
