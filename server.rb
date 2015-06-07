@@ -30,8 +30,6 @@ configure :production do
   }
 end
 
-@api_token = "#{ENV['ROUND_API_TOKEN']}"
-
 def db_connection
   begin
     connection = PG.connect(dbname: settings.db_config[:dbname])
@@ -70,6 +68,7 @@ end
 
 post '/register' do
   @client = Round.client
+  @api_token = ENV['ROUND_API_TOKEN']
   first_name = params[:first_name]
   last_name = params[:last_name]
   email = params[:email]
