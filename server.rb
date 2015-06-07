@@ -8,7 +8,7 @@ require 'rack-ssl-enforcer'
 Dotenv.load
 
 configure :development do
-  set :db_config, { dbname: "bitbuds" }
+  set :db_config, { dbname: "bitflash" }
 end
 
 configure :production do
