@@ -8,44 +8,41 @@ require 'rack-ssl-enforcer'
 Dotenv.load
 
 configure :development do
-  set :db_config, { dbname: "bitflash" }
+  set :db_config, dbname: 'bitflash'
 end
 
 configure :production do
-  uri = URI.parse(ENV["DATABASE_URL"])
+  uri = URI.parse(ENV['DATABASE_URL'])
   use Rack::SslEnforcer
   set :session_secret, ENV['SESSION_SECRET']
 
-  #Enable sinatra sessions
-  use Rack::Session::Cookie, :key => '_rack_session',
-                             :path => '/',
-                             :expire_after => 2592000, # In seconds
-                             :secret => settings.session_secret 
-  set :db_config, {
-    host: uri.host,
-    port: uri.port,
-    dbname: uri.path.delete('/'),
-    user: uri.user,
-    password: uri.password
-  }
+  # Enable sinatra sessions
+  use Rack::Session::Cookie, key: '_rack_session',
+                             path: '/',
+                             expire_after: 2_592_000, # In seconds
+                             secret: settings.session_secret
+  set :db_config,
+      host: uri.host,
+      port: uri.port,
+      dbname: uri.path.delete('/'),
+      user: uri.user,
+      password: uri.password
 end
 
 def db_connection
-  begin
-    connection = PG.connect(settings.db_config)
-    yield(connection)
-  ensure
-    connection.close
-  end
+  connection = PG.connect(settings.db_config)
+  yield(connection)
+ensure
+  connection.close
 end
 
-def authenticate_user(api_token, device_token, email)
-  full_user = @client.authenticate_device(
-            api_token: @api_token,
-            device_token: device_token,
-            email: email
-          )
-end
+# def authenticate_user(api_token, device_token, email)
+#   full_user = @client.authenticate_device(
+#             api_token: @api_token,
+#             device_token: device_token,
+#             email: email
+#           )
+# end
 
 get '/' do
   erb :index
@@ -55,12 +52,13 @@ get '/login' do
   erb :login
 end
 
-post '/login' do
-  supplied_password = params[:password]
-  correct_password = db_connection do |conn|
-    conn.exec_params("select password from users where email = $1", [params[:email]]).to_a[0]['password']
-  end
-end
+# post '/login' do
+#   supplied_password = params[:password]
+#   correct_password = db_connection do |conn|
+#     conn.exec_params("select password from users where email = $1",
+#       [params[:email]]).to_a[0]['password']
+#   end
+# end
 
 get '/register' do
   erb :register
@@ -76,15 +74,20 @@ post '/register' do
   device_name = params[:device_name]
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
   device_token = client.users.create(
-                  first_name: first_name,
-                  last_name: last_name,
-                  email: email,
-                  passphrase: passphrase,
-                  device_name: device_name,
-                  redirect_uri: 'http://bitbuds.herokuapp.com'
-                )
+    first_name: first_name,
+    last_name: last_name,
+    email: email,
+    passphrase: passphrase,
+    device_name: device_name,
+    redirect_uri: 'http://bitbuds.herokuapp.com'
+  )
+  query = <<-SQL
+  INSERT INTO users (first_name, last_name, email, password, device_token)
+  VALUES ($1, $2, $3, $4, $5)
+  SQL
+  values = [first_name, last_name, email, password, device_token]
   db_connection do |conn|
-    conn.exec_params("INSERT INTO users (first_name, last_name, email, password, device_token) VALUES ($1, $2, $3, $4, $5)", [first_name, last_name, email, password, device_token])
+    conn.exec_params(query, values)
   end
   erb :index
 end
