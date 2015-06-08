@@ -4,7 +4,6 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
-require 'pry'
 
 Dotenv.load
 
@@ -59,7 +58,6 @@ post '/login' do
       [params[:email]]).to_a[0]['password']
   end
   password = BCrypt::Password.new(correct_password)
-  binding.pry
   if password == params[:password]
     erb :home
   else
