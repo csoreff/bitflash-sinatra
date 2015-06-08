@@ -70,7 +70,7 @@ post '/register' do
   last_name = params[:last_name]
   email = params[:email]
   password = BCrypt::Password.create(params[:password])
-  passphrase = BCrypt::Password.create(params[:passphrase])
+  passphrase = params[:passphrase]
   device_name = params[:device_name]
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
   device_token = client.users.create(
