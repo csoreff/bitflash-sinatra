@@ -4,6 +4,7 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
+require 'pry'
 
 Dotenv.load
 
@@ -52,13 +53,19 @@ get '/login' do
   erb :login
 end
 
-# post '/login' do
-#   supplied_password = params[:password]
-#   correct_password = db_connection do |conn|
-#     conn.exec_params("select password from users where email = $1",
-#       [params[:email]]).to_a[0]['password']
-#   end
-# end
+post '/login' do
+  correct_password = db_connection do |conn|
+    conn.exec_params("select password from users where email = $1",
+      [params[:email]]).to_a[0]['password']
+  end
+  password = BCrypt::Password.new(correct_password)
+  binding.pry
+  if password == params[:password]
+    erb :home
+  else
+    erb :login
+  end
+end
 
 get '/register' do
   erb :register
@@ -79,7 +86,7 @@ post '/register' do
     email: email,
     passphrase: passphrase,
     device_name: device_name,
-    redirect_uri: 'http://bitbuds.herokuapp.com'
+    redirect_uri: 'https://bitbuds.herokuapp.com'
   )
   query = <<-SQL
   INSERT INTO users (first_name, last_name, email, password, device_token)
