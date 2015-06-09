@@ -4,10 +4,16 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
+require 'pry'
 
 Dotenv.load
 
 configure :development do
+  set :session_secret, ENV['SESSION_SECRET']
+  use Rack::Session::Cookie, key: '_rack_session',
+                             path: '/',
+                             expire_after: 2_592_000, # In seconds
+                             secret: settings.session_secret
   set :db_config, dbname: 'bitflash'
 end
 
@@ -36,13 +42,13 @@ ensure
   connection.close
 end
 
-# def authenticate_user(api_token, device_token, email)
-#   full_user = @client.authenticate_device(
-#             api_token: @api_token,
-#             device_token: device_token,
-#             email: email
-#           )
-# end
+def authenticate_user(api_token, device_token, email)
+  full_user = @client.authenticate_device(
+            api_token: api_token,
+            device_token: device_token,
+            email: email
+            )
+end
 
 get '/' do
   erb :index
@@ -53,16 +59,30 @@ get '/login' do
 end
 
 post '/login' do
-  correct_password = db_connection do |conn|
-    conn.exec_params("select password from users where email = $1",
-      [params[:email]]).to_a[0]['password']
+  query = db_connection do |conn|
+    conn.exec_params("select password, id, device_token from users where email = $1",
+      [params[:email]]).to_a
   end
+  correct_password = query[0]['password']
+  user_id = query[0]['id']
+  device_token = query[0]['device_token']
   password = BCrypt::Password.new(correct_password)
   if password == params[:password]
-    erb :home
+    session[:email] = params[:email]
+    session[:user_id] = user_id
+    session[:device_token] = device_token
+    redirect '/home'
   else
     erb :login
   end
+end
+
+get '/home' do
+  binding.pry
+  client = Round.client
+  client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
+  user = client.user(session[:email])
+  authenticate_user(ENV['ROUND_API_TOKEN'], session[:device_token], params[:email])
 end
 
 get '/register' do
