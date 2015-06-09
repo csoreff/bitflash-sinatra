@@ -4,7 +4,6 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
-require 'pry'
 
 Dotenv.load
 
