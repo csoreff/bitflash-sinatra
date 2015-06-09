@@ -83,6 +83,7 @@ get '/home' do
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
   user = client.user(session[:email])
   authenticate_user(ENV['ROUND_API_TOKEN'], session[:device_token], params[:email])
+  erb :home
 end
 
 get '/register' do
