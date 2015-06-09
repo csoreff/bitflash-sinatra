@@ -98,7 +98,7 @@ post '/register' do
     email: email,
     passphrase: passphrase,
     device_name: device_name,
-    redirect_uri: 'https://bitbuds.herokuapp.com'
+    redirect_uri: 'https://bitflash.herokuapp.com'
   )
   query = <<-SQL
   INSERT INTO users (first_name, last_name, email, password, device_token)
