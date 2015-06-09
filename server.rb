@@ -42,14 +42,6 @@ ensure
   connection.close
 end
 
-def authenticate_user(api_token, device_token, email)
-  full_user = @client.authenticate_device(
-            api_token: api_token,
-            device_token: device_token,
-            email: email
-            )
-end
-
 get '/' do
   erb :index
 end
@@ -78,11 +70,13 @@ post '/login' do
 end
 
 get '/home' do
-  binding.pry
   client = Round.client
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
-  user = client.user(session[:email])
-  authenticate_user(ENV['ROUND_API_TOKEN'], session[:device_token], params[:email])
+  user = client.authenticate_device(
+            api_token: ENV['ROUND_API_TOKEN'],
+            device_token: session[:device_token],
+            email: session[:email]
+          )
   erb :home
 end
 
