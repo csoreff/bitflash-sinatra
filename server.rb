@@ -51,8 +51,8 @@ end
 
 post '/login' do
   query = db_connection do |conn|
-    conn.exec_params("select password, id, device_token from users where email = $1",
-      [params[:email]]).to_a
+    conn.exec_params('select password, id, device_token from users where email
+      =$1', [params[:email]]).to_a
   end
   correct_password = query[0]['password']
   user_id = query[0]['id']
@@ -72,10 +72,10 @@ get '/home' do
   client = Round.client
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
   user = client.authenticate_device(
-            api_token: ENV['ROUND_API_TOKEN'],
-            device_token: session[:device_token],
-            email: session[:email]
-          )
+    api_token: ENV['ROUND_API_TOKEN'],
+    device_token: session[:device_token],
+    email: session[:email]
+  )
   erb :home
 end
 
