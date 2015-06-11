@@ -33,7 +33,7 @@ CREATE VIEW friendships AS
 -- INSERT INTO users ( name ) VALUES ( 'baz' );
 
 -- SELECT * FROM users;
---  users_id | name 
+--  users_id | name
 -- ----------+------
 --         1 | foo
 --         2 | bar
@@ -44,21 +44,29 @@ CREATE VIEW friendships AS
 -- INSERT INTO FRIENDS ( user_a, user_b, status ) VALUES ( 1, 3, 1 );
 
 -- SELECT * FROM friendships ORDER BY user_a, user_b;
---  user_a | user_b 
+--  user_a | user_b
 -- --------+--------
 --       1 |      2
 --       1 |      3
 --       2 |      1
 --       3 |      1
 
--- SELECT a.name, b.name
+-- SELECT a.first_name, a.last_name, b.first_name, b.last_name
 --     FROM friendships
---     JOIN users a ON a.users_id = user_a
---     JOIN users b ON b.users_id = user_b
+--     JOIN users a ON a.id = user_a
+--     JOIN users b ON b.id = user_b
 --     ORDER BY a.name, b.name;
---  name | name 
+--  name | name
 -- ------+------
 --  bar  | foo
 --  baz  | foo
 --  foo  | bar
 --  foo  | baz
+
+-- SELECT a.first_name AS user_first_name, a.last_name AS user_last_name,
+--  b.first_name AS friend_first_name, b.last_name AS friend_last_name
+--    FROM friendships
+--    JOIN users a on a.id = user_a
+--    JOIN users b on b.id = user_b
+--    WHERE a.id = 1
+--    ORDER BY a.first_name, b.first_name;
