@@ -12,19 +12,19 @@ CREATE TABLE users (
 );
 
 CREATE TABLE friends (
-    id SERIAL PRIMARY KEY,
-    timestamp TIMESTAMPTZ default now(),
-    user_a integer NOT NULL REFERENCES users,
-    user_b integer NOT NULL REFERENCES users,
-    status integer NOT NULL default 2
+  id SERIAL PRIMARY KEY,
+  timestamp TIMESTAMPTZ default now(),
+  user_a integer NOT NULL REFERENCES users,
+  user_b integer NOT NULL REFERENCES users,
+  status integer NOT NULL default 2
 );
 
 -- For listing friendships, a view:
 
 CREATE VIEW friendships AS
-    SELECT DISTINCT user_a, user_b FROM friends WHERE status = 1
-    UNION
-    SELECT DISTINCT user_b, user_a FROM friends WHERE status = 1;
+  SELECT DISTINCT user_a, user_b FROM friends WHERE status = 1
+  UNION
+  SELECT DISTINCT user_b, user_a FROM friends WHERE status = 1;
 
 -- You can use it like so:
 

@@ -41,6 +41,15 @@ ensure
   connection.close
 end
 
+def friend_request(friend_user_id)
+  conn.exec_params("INSERT INTO friends ( user_a, user_b, status ) VALUES
+    ( $1, $2, $3 );", [session[:user_id], friend_user_id, 2])
+end
+
+def accept_friend_request(friendship_id)
+  conn.exec("UPDATE friends SET status = 1 WHERE id = #{friendship_id}")
+end
+
 get '/' do
   erb :index
 end
@@ -55,12 +64,11 @@ post '/login' do
       =$1', [params[:email]]).to_a
   end
   correct_password = query[0]['password']
-  user_id = query[0]['id']
   device_token = query[0]['device_token']
   password = BCrypt::Password.new(correct_password)
   if password == params[:password]
     session[:email] = params[:email]
-    session[:user_id] = user_id
+    session[:user_id] = query[0]['id']
     session[:device_token] = device_token
     redirect '/home'
   else
