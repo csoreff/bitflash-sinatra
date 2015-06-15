@@ -4,6 +4,7 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
+require 'pry'
 
 Dotenv.load
 
@@ -79,7 +80,7 @@ end
 get '/home' do
   client = Round.client
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
-  session[:user] = client.authenticate_device(
+  @authenticated_user = client.authenticate_device(
     api_token: ENV['ROUND_API_TOKEN'],
     device_token: session[:device_token],
     email: session[:email]
@@ -93,7 +94,7 @@ get '/home' do
     WHERE a.id = $1
     ORDER BY a.first_name, b.first_name;
   SQL
-  session[:user_friends] = db_connection do |conn|
+  @friends_list = db_connection do |conn|
     conn.exec_params(get_friends_query, [session[:user_id]]).to_a
   end
   erb :home

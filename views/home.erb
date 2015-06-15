@@ -4,6 +4,11 @@
   <title>Home</title>
 </head>
 <body>
-  <p>Make this later</p>
+  <h1>Friends</h1>
+  <ul>
+    <% @friends_list.each do |friend| %>
+      <li><%=friend['friend_first_name'] + friend['friend_last_name']%></li>
+    <% end %>
+  </ul>
 </body>
 </html>
