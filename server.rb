@@ -47,7 +47,7 @@ def friend_request(friend_user_id)
 end
 
 def accept_friend_request(friendship_id)
-  conn.exec("UPDATE friends SET status = 1 WHERE id = #{friendship_id}")
+  conn.exec_params("UPDATE friends SET status = 1 WHERE id = $1", [friendship_id])
 end
 
 get '/' do
