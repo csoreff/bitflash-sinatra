@@ -5,10 +5,17 @@
 </head>
 <body>
   <h1>Friends</h1>
-  <ul>
-    <% @friends_list.each do |friend| %>
-      <li><%=friend['friend_first_name'] + friend['friend_last_name']%></li>
-    <% end %>
-  </ul>
+  <table>
+      <% @friends_list.each do |friend| %>
+        <td><%=friend['friend_first_name'] + " " + friend['friend_last_name']%></td>
+        <td><button onclick="payAmount()">Pay</button>
+      <% end %>
+  </table>
+  <script>
+    function payAmount() {
+      amount = prompt("How much would you like to send?")
+      confirm = prompt("Are you sure?")
+    }
+  </script>
 </body>
 </html>

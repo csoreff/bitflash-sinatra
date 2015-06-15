@@ -80,11 +80,13 @@ end
 get '/home' do
   client = Round.client
   client.authenticate_identify(api_token: ENV['ROUND_API_TOKEN'])
-  @authenticated_user = client.authenticate_device(
+  authenticated_user = client.authenticate_device(
     api_token: ENV['ROUND_API_TOKEN'],
     device_token: session[:device_token],
     email: session[:email]
   )
+  binding.pry
+  @my_account = authenticated_user.wallet.accounts['default']
   get_friends_query = <<-SQL
     SELECT a.first_name AS user_first_name, a.last_name AS user_last_name,
       b.first_name AS friend_first_name, b.last_name AS friend_last_name
