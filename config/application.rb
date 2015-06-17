@@ -9,6 +9,7 @@ configure :development do
 end
 
 configure :production do
+  Dotenv.load
   uri = URI.parse(ENV['DATABASE_URL'])
   use Rack::SslEnforcer
   set :session_secret, ENV['SESSION_SECRET']
