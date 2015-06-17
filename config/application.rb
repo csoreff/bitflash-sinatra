@@ -1,5 +1,6 @@
+Dotenv.load
+
 configure :development do
-  Dotenv.load
   set :session_secret, ENV['SESSION_SECRET']
   use Rack::Session::Cookie, key: '_rack_session',
                              path: '/',
@@ -9,7 +10,6 @@ configure :development do
 end
 
 configure :production do
-  Dotenv.load
   uri = URI.parse(ENV['DATABASE_URL'])
   use Rack::SslEnforcer
   set :session_secret, ENV['SESSION_SECRET']
