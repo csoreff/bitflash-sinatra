@@ -4,6 +4,9 @@ require 'round'
 require 'bcrypt'
 require 'dotenv'
 require 'rack-ssl-enforcer'
+require 'sinatra'
+require 'sinatra/activerecord'
+require 'sinatra/flash'
 require_relative 'config/application'
 
 get '/' do
