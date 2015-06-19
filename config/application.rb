@@ -35,10 +35,10 @@ ensure
 end
 
 def friend_request(friend_user_id)
-  conn.exec_params("INSERT INTO friends ( user_a, user_b, status ) VALUES
-    ( $1, $2, $3 );", [session[:user_id], friend_user_id, 2])
+  conn.exec_params('INSERT INTO friends ( user_a, user_b, status ) VALUES
+    ( $1, $2, $3 );', [session[:user_id], friend_user_id, 2])
 end
 
 def accept_friend_request(friendship_id)
-  conn.exec_params("UPDATE friends SET status = 1 WHERE id = $1", [friendship_id])
+  conn.exec_params('UPDATE friends SET status = 1 WHERE id = $1', [friendship_id])
 end
